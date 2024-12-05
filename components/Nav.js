@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
+import { motion } from "motion/react";
 
 const navItems = [
   {
@@ -33,29 +31,41 @@ const navItems = [
   },
 ];
 
-function Nav() {
-  const menuRef = useRef(null);
-
-  useGSAP(() => {
-    gsap.from(menuRef.current.children, {
-      y: -110,
-      scale: 0,
+// Framer Motion Variants
+const listVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0,
+    y: -110,
+  },
+  visible: (i) => ({
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
       duration: 1,
-      stagger: 0.2,
-      delay: 0.7,
-      ease: "power3",
-    });
-  });
+      delay: 0.7 + i * 0.2,
+      ease: "easeOut",
+    },
+  }),
+};
 
+function Nav() {
   return (
     <nav>
-      <ul>
-        <li ref={menuRef} className="flex items-center gap-[70px]">
-          {navItems.map((item) => (
+      <ul className="flex items-center gap-[70px]">
+        {navItems.map((item, index) => (
+          <motion.li
+            key={item.id}
+            className="opacity-0 scale-0 -translate-y-[110px]"
+            custom={index}
+            variants={listVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <Link
-              key={item.id}
               href={item.href}
-              className={`block  ${
+              className={`block ${
                 item.manuName === "Contact"
                   ? "border-2 border-gray-50 px-9 py-3 rounded-xl"
                   : "hover:text-gray-300 px-2 py-1"
@@ -63,8 +73,8 @@ function Nav() {
             >
               {item.manuName}
             </Link>
-          ))}
-        </li>
+          </motion.li>
+        ))}
       </ul>
     </nav>
   );
